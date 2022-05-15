@@ -1,0 +1,8 @@
+app:
+  # 5 request for each method from ip per 1 sec
+  rate-limit:
+    quotas-count: ${RATE_LIMIT_QUOTAS_COUNT:100000}
+    limit-request-per-milli-second: ${RATE_LIMIT_REQUEST_PER_MILLISECOND:60000}
+    max-loaded-cache-size: ${RATE_LIMIT_MAX_LOADED_CACHE_SIZE:10000}
+  scheduler:
+    clear-rate-limit: ${RATE_LIMIT_SCHEDULER_CLEAR:0/11 0/1 * * * *}

@@ -1,0 +1,8 @@
+app:
+  # 5 request for each method from ip per 1 sec
+  rate-limit:
+    quotas-count: 1
+    limit-request-per-milli-second: 1000
+    max-loaded-cache-size: 1
+  scheduler:
+    clear-rate-limit: 0/11 0/1 10 * * *
