@@ -1,3 +1,8 @@
+server:
+  port: ${SERVER_PORT:9000}
+spring:
+  application:
+    name: rate-limit
 app:
   # 5 request for each method from ip per 1 sec
   rate-limit:

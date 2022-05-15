@@ -26,9 +26,12 @@ public class RateLimitter {
         RequestHelper.getRequest().orElseThrow(() -> new RuntimeException("http servlet not found"));
     final String ip = RequestHelper.getClientIp(httpServletRequest);
     final String key = String.join(":", ip, method);
-    final RateLimitData cached = cache.get(key);
+    RateLimitData cached = null;
     final int quotasCount = rateLimitProperty.getQuotasCount();
+    readWriteLock.writeLock().lock();
+    cached = cache.get(key);
     if (cached != null) {
+      readWriteLock.writeLock().unlock();
       readWriteLock.readLock().lock();
       try {
         final AtomicInteger availableQuota = cached.getAvailableQuota();
@@ -46,7 +49,6 @@ public class RateLimitter {
         readWriteLock.readLock().unlock();
       }
     } else {
-      readWriteLock.writeLock().lock();
       try {
         final RateLimitData value = new RateLimitData();
         cache.put(key, value);

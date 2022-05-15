@@ -11,6 +11,6 @@ public class SampleController {
   @GetMapping("/sample")
   @RateLimit
   public ResponseEntity<Object> getSample() {
-    return ResponseEntity.ok(null);
+    return ResponseEntity.ok("Hello World!!!!");
   }
 }

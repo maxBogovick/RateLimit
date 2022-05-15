@@ -1,0 +1,7 @@
+version: '3.7'
+services:
+  demo:
+    build: .
+    container_name: rate-limit
+    ports:
+      - "9000:9000"
