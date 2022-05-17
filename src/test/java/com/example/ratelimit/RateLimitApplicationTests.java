@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -39,6 +40,11 @@ class RateLimitApplicationTests {
     return request;
   };
 
+  @BeforeEach
+  void clearCache() {
+    rateLimitter.allClear();
+  }
+
   @Test
   void expect_success_one_request_per_one_seconds_test() throws Exception {
     Assertions.assertTrue(executeRequest(STATUS_OK));
@@ -47,15 +53,27 @@ class RateLimitApplicationTests {
   }
 
   @Test
+  void expect_success_many_requests_test() throws Exception {
+    Assertions.assertTrue(executeRequest(STATUS_OK));
+    Assertions.assertTrue(executeRequest(STATUS_BAD_GATEWAY));
+    TimeUnit.SECONDS.sleep(2L);
+    Assertions.assertTrue(executeRequest(STATUS_OK));
+    Assertions.assertTrue(executeRequest(STATUS_BAD_GATEWAY));
+    Assertions.assertTrue(executeRequest(STATUS_BAD_GATEWAY));
+    Assertions.assertTrue(executeRequest(STATUS_BAD_GATEWAY));
+    TimeUnit.SECONDS.sleep(2L);
+    Assertions.assertTrue(executeRequest(STATUS_OK));
+    Assertions.assertTrue(executeRequest(STATUS_BAD_GATEWAY));
+  }
+
+  @Test
   void expect_success_one_request_and_bad_gateway_second_test() throws Exception {
-    rateLimitter.clearCache();
     Assertions.assertTrue(executeRequest(STATUS_OK));
     Assertions.assertTrue(executeRequest(STATUS_BAD_GATEWAY));
   }
 
   @Test
   void expect_success_multiple_ip_request_test() throws Exception {
-    rateLimitter.clearCache();
     final RequestPostProcessor requestPostProcessor1 = request -> {
       request.setRemoteAddr("192.168.1.1");
       return request;

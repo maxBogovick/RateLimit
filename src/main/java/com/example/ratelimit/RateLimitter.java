@@ -38,9 +38,10 @@ public class RateLimitter {
         if (availableQuota.get() < quotasCount) {
           return availableQuota.incrementAndGet() <= quotasCount;
         } else {
-          if (cached.getDateCreate() + rateLimitProperty.getLimitRequestPerMilliSecond()
-              < System.currentTimeMillis()) {
-            return availableQuota.get() <= quotasCount;
+          if (System.currentTimeMillis() > cached.getDateCreate() + rateLimitProperty.getLimitRequestPerMilliSecond()) {
+            final RateLimitData value = new RateLimitData();
+            cache.put(key, value);
+            return value.getAvailableQuota().get() <= quotasCount;
           } else {
             return availableQuota.get() < quotasCount;
           }
@@ -64,5 +65,8 @@ public class RateLimitter {
       cache.entrySet().removeIf(entry -> entry.getValue().getAvailableQuota().get() >= rateLimitProperty.getQuotasCount()
           && System.currentTimeMillis() - entry.getValue().getDateCreate() > rateLimitProperty.getLimitRequestPerMilliSecond());
     }
+  }
+  public void allClear() {
+    cache.clear();
   }
 }
