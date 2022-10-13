@@ -1,3 +1,3 @@
 # RateLimit
 Test task for limiting incoming requests and call method for one ip
-Author Maxim Bogovik
+Author Maxim Bogovik 2022
